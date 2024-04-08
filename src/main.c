@@ -9,6 +9,7 @@
 
 // RTOS Handles
 void vMainTask( void * pvParameters );
+
 // UART Configuration
 const uart_port_t uart_num = UART_NUM_2;
 uart_config_t uart_config = {
@@ -21,6 +22,7 @@ uart_config_t uart_config = {
 };
 // GPIO Configuration
 gpio_config_t led_gpio = {
+    
     // Trigger Pin Output
     .intr_type = GPIO_INTR_DISABLE,             // disable interrupt
 	.mode = GPIO_MODE_OUTPUT,                   // set as output mode
