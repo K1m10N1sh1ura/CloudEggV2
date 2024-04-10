@@ -1,4 +1,5 @@
 #include "stdio.h"
+#include "string.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/gpio.h"
@@ -27,6 +28,7 @@ volatile int32_t time_stop;
 volatile bool running_measurement = false;
 volatile bool echo_started = false;
 volatile bool echo_stoped  = false;
+volatile uint32_t freq_value;
 
 // Function Prototypes
 static void IRAM_ATTR gpio_isr_handler(void* arg);
@@ -35,18 +37,10 @@ float getDist();
 
 // RTOS Handles
 SemaphoreHandle_t xSemaphoreISR = NULL;
+TaskHandle_t xMainTaskHandle = NULL;
+
 void vMainTask( void * pvParameters );
 
-// UART Configuration
-const uart_port_t uart_num = UART_NUM_2;
-uart_config_t uart_config = {
-    .baud_rate = 115200,
-    .data_bits = UART_DATA_8_BITS,
-    .parity = UART_PARITY_DISABLE,
-    .stop_bits = UART_STOP_BITS_1,
-    .flow_ctrl = UART_HW_FLOWCTRL_CTS_RTS,
-    .rx_flow_ctrl_thresh = 122,
-};
 // GPIO Configuration
 gpio_config_t led_gpio = {
     // Trigger Pin Output
@@ -78,40 +72,14 @@ void app_main(void) {
     ESP_ERROR_CHECK(gpio_config(&led_gpio));
     ESP_ERROR_CHECK(gpio_config(&io_conf_trigger));
     ESP_ERROR_CHECK(gpio_config(&io_conf_echo));
-
-    // Configure UART parameters
-    ESP_ERROR_CHECK(uart_param_config(uart_num, &uart_config));
-    // Set UART pins(TX: IO17 (UART2 default), RX: IO16 (UART2 default), RTS: IO18, CTS: IO19)
-    ESP_ERROR_CHECK(uart_set_pin(UART_NUM_2, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, 18, 19));
     // init ISR
     gpio_install_isr_service(0);
     gpio_isr_handler_add(GPIO_OUTPUT_IO_ECHO, gpio_isr_handler, (void*) GPIO_OUTPUT_IO_ECHO);
     
     // RTOS Config
-    xTaskCreate(vMainTask, "MainTask", 2048, NULL, 1, NULL);
+    xTaskCreate(vMainTask, "MainTask", 2048, NULL, 1, &xMainTaskHandle);
     xSemaphoreISR = xSemaphoreCreateBinary();
 
-    while(1) {
-        // Setze den GPIO-Pin auf HIGH
-        gpio_set_level(GPIO_NUM_2, 0);
-
-        // Beispielhaft kann hier eine Pause von einigen Sekunden eingefügt werden
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-
-        // Setze den GPIO-Pin auf LOW
-        gpio_set_level(GPIO_NUM_2, 1);
-
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    } 
-}
-
-void vMainTask( void * pvParameters ) {
-
-    // Set GPIO_OUTPUT_IO_TRIGGER high
-    gpio_set_level(GPIO_OUTPUT_IO_TRIGGER, 1); 
-    float distance;
-
-    uint32_t freq_value;
     // Attempt to get the CPU clock frequency
     esp_err_t result = esp_clk_tree_src_get_freq_hz(SOC_MOD_CLK_CPU, ESP_CLK_TREE_SRC_FREQ_PRECISION_EXACT, &freq_value);
 
@@ -123,18 +91,38 @@ void vMainTask( void * pvParameters ) {
         ESP_LOGE("CPU Freq", "Failed to get CPU frequency, error: %d", result);
     }
 
+    char cli_command[80];
+
+    while(1) {
+        if (scanf("%79s", cli_command) == 1) {  // Check if scanf successfully read a string
+            if (strcmp(cli_command, "m") == 0) {
+                printf("Sound barrier on! \n");
+                if(xMainTaskHandle != NULL) {
+                    vTaskResume(xMainTaskHandle); // Ensure xMainTaskHandle is initialized and points to a valid task
+                }
+            }
+            else {
+                printf("Invalid command\n");
+            }
+        }
+        vTaskDelay(200 / portTICK_PERIOD_MS);
+    } 
+}
+
+void vMainTask( void * pvParameters ) {
+
+    gpio_set_level(GPIO_OUTPUT_IO_TRIGGER, 1); 
+    float distance;
+    vTaskSuspend(NULL);
+
     while(1)
     {
-        distance = getDist(freq_value);
-        if (distance > 0.0)
-        {
-            printf("Distanz = %f\n", distance);
+        do {
+            distance = getDist();
         }
-        else {
-            printf("ÄH = %f\n", distance);
-        }
-
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        while (distance > 1.0 || distance < 0.0001);
+        printf("TRIGGER\n");
+        vTaskSuspend(NULL);
     }
 }
 
@@ -150,7 +138,7 @@ HC_SR04_ECHO trigger_HC_SR04() {
     }
 }
 
-float getDist(uint32_t freq_value) {
+float getDist() {
     if (trigger_HC_SR04() == TRIGGER_SENT) {
             if (xSemaphoreTake(xSemaphoreISR,20) == pdTRUE) {
                 int time_ticks;
