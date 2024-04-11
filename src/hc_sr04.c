@@ -1,6 +1,5 @@
 #include "hc_sr04.h"
-#include "gpio_pins.h"
-#include "driver/gpio.h"
+
 
 void HC_SR04_init(HC_SR04_Manager *manager) {
     manager->time_start = 0;

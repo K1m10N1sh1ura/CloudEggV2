@@ -12,41 +12,21 @@
 #include "hc_sr04.h"
 #include "tasks.h"
 
+// Global Variables
 HC_SR04_Manager sensor_manager;
 
 // Function Prototypes
+void vMainTask( void * pvParameters );
 static void gpio_isr_handler(void* arg);
 float getDist();
 
 // RTOS Handles
 TaskHandle_t xMainTaskHandle = NULL;
 
-void vMainTask( void * pvParameters );
-
-// GPIO Configuration
-gpio_config_t io_conf_trigger = {
-    // Trigger Pin Output
-    .intr_type = GPIO_INTR_DISABLE,         // disable interrupt
-	.mode = GPIO_MODE_OUTPUT,               // set as output mode
-	.pin_bit_mask = (1ULL<<GPIO_OUTPUT_IO_TRIGGER),             // GPIO D33
-	.pull_down_en = GPIO_PULLDOWN_DISABLE,  // disable pull-down mode
-	.pull_up_en = GPIO_PULLUP_DISABLE,      // disable pull-up mode
-};
-gpio_config_t io_conf_echo = {
-    // Echo Pin Input
-    .intr_type = GPIO_INTR_ANYEDGE,          // enable interrupt
-	.mode = GPIO_MODE_INPUT,                 // set as input mode
-	.pin_bit_mask = (1ULL<<GPIO_OUTPUT_IO_ECHO),               // GPIO D25
-	.pull_down_en = GPIO_PULLDOWN_ENABLE,    // disable pull-down mode
-	.pull_up_en = GPIO_PULLUP_DISABLE,       // enable pull-up mode
-};
 
 void app_main(void) {
-    HC_SR04_init(&sensor_manager);
-
-    // Configure GPIOs
-    ESP_ERROR_CHECK(gpio_config(&io_conf_trigger));
-    ESP_ERROR_CHECK(gpio_config(&io_conf_echo));
+    HC_SR04_init(&sensor_manager); 
+    gpio_setup();
 
     // init ISR
     gpio_install_isr_service(ESP_INTR_FLAG_IRAM);

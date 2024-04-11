@@ -5,6 +5,8 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
+#include "gpio_pins.h"
+#include "driver/gpio.h"
 
 // Enums zur Darstellung des Sensorzustandes
 typedef enum {
