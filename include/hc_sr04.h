@@ -32,5 +32,7 @@ typedef struct {
 void HC_SR04_init(HC_SR04_Manager *manager);
 // Beispiel einer Funktion, die den Sensorzustand verwendet
 void HC_SR04_trigger(HC_SR04_Manager *manager);
+// start single shot distance measurement
+float getDist(HC_SR04_Manager *manager);
 
 #endif // HC_SR04_H

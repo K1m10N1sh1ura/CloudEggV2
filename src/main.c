@@ -3,7 +3,6 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/gpio.h"
-#include "driver/uart.h"
 #include "esp_system.h"
 #include "esp_log.h"
 #include "esp_clk_tree.h"
@@ -16,12 +15,12 @@
 HC_SR04_Manager sensor_manager;
 
 // Function Prototypes
-void vMainTask( void * pvParameters );
+void vAcousticBarrierTask( void * pvParameters );
 static void gpio_isr_handler(void* arg);
-float getDist();
+float getDist(HC_SR04_Manager *manager);
 
 // RTOS Handles
-TaskHandle_t xMainTaskHandle = NULL;
+TaskHandle_t xAcousticBarrierTaskHandle = NULL;
 
 
 void app_main(void) {
@@ -33,7 +32,7 @@ void app_main(void) {
     gpio_isr_handler_add(GPIO_OUTPUT_IO_ECHO, gpio_isr_handler, (void*)&sensor_manager);
 
     // RTOS Config
-    xTaskCreate(vMainTask, "MainTask", 2048, NULL, 1, &xMainTaskHandle);
+    xTaskCreate(vAcousticBarrierTask, "AcousticBarrierTask", 2048, NULL, 1, &xAcousticBarrierTaskHandle);
 
     // Attempt to get the CPU clock frequency
     esp_err_t result = esp_clk_tree_src_get_freq_hz(SOC_MOD_CLK_CPU, ESP_CLK_TREE_SRC_FREQ_PRECISION_EXACT, &sensor_manager.frequency);
@@ -52,8 +51,8 @@ void app_main(void) {
         if (scanf("%79s", cli_command) == 1) {  // Check if scanf successfully read a string
             if (strcmp(cli_command, "m") == 0) {
                 printf("Sound barrier on! \n");
-                if(xMainTaskHandle != NULL) {
-                    vTaskResume(xMainTaskHandle); // Ensure xMainTaskHandle is initialized and points to a valid task
+                if(xAcousticBarrierTaskHandle != NULL) {
+                    vTaskResume(xAcousticBarrierTaskHandle); // Ensure xMainTaskHandle is initialized and points to a valid task
                 }
             }
             else {
@@ -64,7 +63,7 @@ void app_main(void) {
     } 
 }
 
-void vMainTask( void * pvParameters ) {
+void vAcousticBarrierTask( void * pvParameters ) {
 
     gpio_set_level(GPIO_OUTPUT_IO_TRIGGER, 1); 
     float distance;
@@ -73,7 +72,7 @@ void vMainTask( void * pvParameters ) {
     while(1)
     {
         do {
-            distance = getDist();
+            distance = getDist(&sensor_manager);
         }
         while (distance > 1.0 || distance < 0.0001);
         printf("TRIGGER\n");
@@ -81,26 +80,10 @@ void vMainTask( void * pvParameters ) {
     }
 }
 
-float getDist() {
-    HC_SR04_trigger(&sensor_manager);
-    if (sensor_manager.state == TRIGGER_SENT) {
-            if (xSemaphoreTake(sensor_manager.semaphore,50) == pdTRUE) {
-                int time_ticks;
-                if (sensor_manager.time_stop < sensor_manager.time_start) {
-                    // cpu cycle count overflow case protection
-                    time_ticks = 4294967296 - 1 + sensor_manager.time_stop - sensor_manager.time_start; // 2^32 = 4294967296
-                }
-                else {
-                    time_ticks = sensor_manager.time_stop - sensor_manager.time_start;
-                }
-                float time_sec = (float) time_ticks / sensor_manager.frequency;
-                float distance = 343.0/2 * time_sec;
-                return distance;
-            }
-            else {return 0.0;}
-    }
-    else {return 0.0;}
-}
+
+
+
+
 
 static void IRAM_ATTR gpio_isr_handler(void* arg) {  
 
