@@ -7,6 +7,8 @@
 #include "freertos/semphr.h"
 #include "gpio_pins.h"
 #include "driver/gpio.h"
+#include "esp_clk_tree.h"
+#include "esp_log.h"
 
 // Enums zur Darstellung des Sensorzustandes
 typedef enum {

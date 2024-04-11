@@ -9,7 +9,17 @@ void HC_SR04_init(HC_SR04_Manager *manager) {
     manager->echo_stopped = false;
     manager->state = NO_ECHO;
     manager->semaphore = xSemaphoreCreateBinary();
-    manager->frequency = 0;
+
+    // Attempt to get the CPU clock frequency
+    esp_err_t result = esp_clk_tree_src_get_freq_hz(SOC_MOD_CLK_CPU, ESP_CLK_TREE_SRC_FREQ_PRECISION_EXACT, &manager->frequency);
+
+    if (result == ESP_OK) {
+        // Successfully retrieved the frequency
+        ESP_LOGI("CPU Freq", "CPU Frequency: %lu Hz", (unsigned long) manager->frequency);
+    } else {
+        // Failed to retrieve the frequency
+        ESP_LOGE("CPU Freq", "Failed to get CPU frequency, error: %d", result);
+    }
 }
 
 void HC_SR04_trigger(HC_SR04_Manager *manager) {

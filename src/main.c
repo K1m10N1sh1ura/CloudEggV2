@@ -4,8 +4,6 @@
 #include "freertos/task.h"
 #include "driver/gpio.h"
 #include "esp_system.h"
-#include "esp_log.h"
-#include "esp_clk_tree.h"
 #include "gpio_pins.h"
 #include "gpio_config.h"
 #include "hc_sr04.h"
@@ -33,17 +31,6 @@ void app_main(void) {
 
     // RTOS Config
     xTaskCreate(vAcousticBarrierTask, "AcousticBarrierTask", 2048, NULL, 1, &xAcousticBarrierTaskHandle);
-
-    // Attempt to get the CPU clock frequency
-    esp_err_t result = esp_clk_tree_src_get_freq_hz(SOC_MOD_CLK_CPU, ESP_CLK_TREE_SRC_FREQ_PRECISION_EXACT, &sensor_manager.frequency);
-
-    if (result == ESP_OK) {
-        // Successfully retrieved the frequency
-        ESP_LOGI("CPU Freq", "CPU Frequency: %lu Hz", sensor_manager.frequency);
-    } else {
-        // Failed to retrieve the frequency
-        ESP_LOGE("CPU Freq", "Failed to get CPU frequency, error: %d", result);
-    }
 
     char cli_command[80];
 
