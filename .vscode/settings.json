@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "iterator": "c"
+        "iterator": "c",
+        "cstdio": "c",
+        "task.h": "c"
     }
 }
