@@ -1,9 +1,6 @@
-#include "stdio.h"
 #include "string.h"
 #include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 #include "driver/gpio.h"
-#include "esp_system.h"
 #include "gpio_pins.h"
 #include "gpio_config.h"
 #include "hc_sr04.h"
@@ -14,11 +11,13 @@ HC_SR04_Manager sensor_manager;
 
 // Function Prototypes
 void vAcousticBarrierTask( void * pvParameters );
+void vCliTask( void * pvParameters );
 static void gpio_isr_handler(void* arg);
 float getDist(HC_SR04_Manager *manager);
 
 // RTOS Handles
 TaskHandle_t xAcousticBarrierTaskHandle = NULL;
+TaskHandle_t xCliTaskHandle = NULL;
 
 
 void app_main(void) {
@@ -31,6 +30,11 @@ void app_main(void) {
 
     // RTOS Config
     xTaskCreate(vAcousticBarrierTask, "AcousticBarrierTask", 2048, NULL, 1, &xAcousticBarrierTaskHandle);
+    xTaskCreate(vCliTask, "CliTask", 2048, NULL, 2, &xCliTaskHandle);
+
+}
+
+void vCliTask( void * pvparameters) {
 
     char cli_command[80];
 
@@ -46,8 +50,8 @@ void app_main(void) {
                 printf("Invalid command\n");
             }
         }
-        vTaskDelay(200 / portTICK_PERIOD_MS);
-    } 
+        vTaskDelay(500 / portTICK_PERIOD_MS);
+    }
 }
 
 void vAcousticBarrierTask( void * pvParameters ) {
@@ -66,11 +70,6 @@ void vAcousticBarrierTask( void * pvParameters ) {
         vTaskSuspend(NULL);
     }
 }
-
-
-
-
-
 
 static void IRAM_ATTR gpio_isr_handler(void* arg) {  
 
