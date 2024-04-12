@@ -18,4 +18,5 @@ void gpio_setup(void) {
     io_conf_echo.pull_down_en = 1;                  // Pull-down aktivieren
     io_conf_echo.pull_up_en = 0;                    // Pull-up nicht aktivieren
     gpio_config(&io_conf_echo);
+    
 }

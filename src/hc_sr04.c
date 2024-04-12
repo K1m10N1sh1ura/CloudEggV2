@@ -51,7 +51,7 @@ float getDist(HC_SR04_Manager *manager) {
                 float distance = 343.0/2 * time_sec;
                 return distance;
             }
-            else {return 0.0;}
+            else {return -1.0;}
     }
-    else {return 0.0;}
+    else {return -2.0;}
 }
