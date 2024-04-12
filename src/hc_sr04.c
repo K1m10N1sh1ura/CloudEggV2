@@ -23,7 +23,7 @@ void HC_SR04_init(HC_SR04_Manager *manager) {
 }
 
 void HC_SR04_trigger(HC_SR04_Manager *manager) {
-    
+    // measurement is triggered by pulling down trigger pin for 10 microseconds
     if (!manager->running_measurement) {
         gpio_set_level(GPIO_OUTPUT_IO_TRIGGER, 0);
         esp_rom_delay_us(10);
@@ -39,6 +39,7 @@ float getDist(HC_SR04_Manager *manager) {
     HC_SR04_trigger(manager);
     if (manager->state == TRIGGER_SENT) {
             if (xSemaphoreTake(manager->semaphore,20) == pdTRUE) {
+                // wait for signal from ISR (via semaphore) that indicates a finished measurement 
                 int time_ticks;
                 if (manager->time_stop < manager->time_start) {
                     // cpu cycle count overflow case protection
