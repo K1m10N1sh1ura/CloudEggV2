@@ -1,19 +1,7 @@
-#include "string.h"
-#include "freertos/FreeRTOS.h"
-#include "driver/gpio.h"
-#include "gpio_pins.h"
-#include "gpio_config.h"
-#include "hc_sr04.h"
-#include "tasks.h"
+#include "main.h"
 
 // Global Variables
 HC_SR04_Manager hc_sr04_manager;
-
-// Task Function Prototypes
-void vAcousticBarrierTask( void * pvParameters );
-void vCliTask( void * pvParameters );
-static void gpio_isr_handler(void* arg);
-void cli_menu();
 
 // RTOS Handles
 TaskHandle_t xAcousticBarrierTaskHandle = NULL;
@@ -29,6 +17,10 @@ void app_main(void) {
     // RTOS Config
     xTaskCreate(vAcousticBarrierTask, "AcousticBarrierTask", 2048, NULL, 1, &xAcousticBarrierTaskHandle);
     xTaskCreate(vCliTask, "CliTask", 2048, NULL, 2, &xCliTaskHandle);
+
+    // Wifi
+    wifi_init();
+
 }
 
 void vCliTask( void * pvparameters) {
