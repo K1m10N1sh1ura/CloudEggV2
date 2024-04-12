@@ -1,7 +1,7 @@
 #include "server.h"
 
 /* Our URI handler function to be called during GET /uri request */
-esp_err_t get_handler(httpd_req_t *req)
+esp_err_t ping_get_handler(httpd_req_t *req)
 {
     /* Send a simple response */
     const char resp[] = "PING";
@@ -43,10 +43,10 @@ esp_err_t post_handler(httpd_req_t *req)
 }
 
 /* URI handler structure for GET /uri */
-httpd_uri_t uri_get = {
+httpd_uri_t ping_uri_get = {
     .uri      = "/ping",
     .method   = HTTP_GET,
-    .handler  = get_handler,
+    .handler  = ping_get_handler,
     .user_ctx = NULL
 };
 
@@ -70,7 +70,7 @@ httpd_handle_t start_webserver(void)
     /* Start the httpd server */
     if (httpd_start(&server, &config) == ESP_OK) {
         /* Register URI handlers */
-        httpd_register_uri_handler(server, &uri_get);
+        httpd_register_uri_handler(server, &ping_uri_get);
         httpd_register_uri_handler(server, &uri_post);
     }
     /* If server failed to start, handle will be NULL */

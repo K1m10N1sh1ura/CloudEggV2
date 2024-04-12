@@ -38,7 +38,7 @@ void HC_SR04_trigger(HC_SR04_Manager *manager) {
 float getDist(HC_SR04_Manager *manager) {
     HC_SR04_trigger(manager);
     if (manager->state == TRIGGER_SENT) {
-            if (xSemaphoreTake(manager->semaphore,50) == pdTRUE) {
+            if (xSemaphoreTake(manager->semaphore,20) == pdTRUE) {
                 int time_ticks;
                 if (manager->time_stop < manager->time_start) {
                     // cpu cycle count overflow case protection
