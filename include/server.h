@@ -9,4 +9,6 @@
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
 
+void server_init();
+
 #endif // SERVER_H

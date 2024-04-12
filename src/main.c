@@ -20,7 +20,7 @@ void app_main(void) {
 
     // Wifi
     wifi_init();
-
+    server_init();
 }
 
 void vCliTask( void * pvparameters) {

@@ -4,7 +4,7 @@
 esp_err_t get_handler(httpd_req_t *req)
 {
     /* Send a simple response */
-    const char resp[] = "URI GET Response";
+    const char resp[] = "PING";
     httpd_resp_send(req, resp, HTTPD_RESP_USE_STRLEN);
     return ESP_OK;
 }
@@ -44,7 +44,7 @@ esp_err_t post_handler(httpd_req_t *req)
 
 /* URI handler structure for GET /uri */
 httpd_uri_t uri_get = {
-    .uri      = "/uri",
+    .uri      = "/ping",
     .method   = HTTP_GET,
     .handler  = get_handler,
     .user_ctx = NULL
@@ -84,4 +84,15 @@ void stop_webserver(httpd_handle_t server)
         /* Stop the httpd server */
         httpd_stop(server);
     }
+}
+
+void server_init() {
+    static httpd_handle_t server = NULL;  
+    server = start_webserver();
+    if (server != NULL) {
+        printf("Server is running now!\n");
+    } else {
+        printf("Server init failed!\n");
+    }
+    
 }
