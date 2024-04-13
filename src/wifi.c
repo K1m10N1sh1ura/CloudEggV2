@@ -79,3 +79,10 @@ void wifi_init() {
     ESP_LOGI(TAG, "ESP_WIFI_MODE_AP");
     wifi_init_softap();
 }
+
+int32_t readRSSI() {
+    // Lese die Signalstärke aus
+    wifi_ap_record_t ap_info;
+    esp_wifi_sta_get_ap_info(&ap_info);
+    return ap_info.rssi;
+}

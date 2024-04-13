@@ -16,5 +16,6 @@
 #include "lwip/sys.h"
 
 void wifi_init();
+int32_t readRSSI();
 
 #endif // WIFI_H

@@ -1,6 +1,4 @@
 #include "server.h"
-#include "cJSON.h"
-#include "main.h"
 
 // HTML-Seite als Konstante
 const char* html_response = 
@@ -12,7 +10,7 @@ const char* html_response =
 "<body>\n"
 "    <h1>ESP32 Web Server</h1>\n"
 "    <button id='actionButton' onclick='startMeasurement()'>Starte Messung</button>\n"
-"    <p>Zeitwert: <span id='timeValue'> 0.00 s </span></p>\n"
+"    <p>Zeit: <span id='timeValue'> 0.00 s </span></p>\n"
 "    <p>Status: <span id='statusMessage'> Bereit...</span></p>\n"
 "\n"
 "    <script>\n"
@@ -81,16 +79,14 @@ static esp_err_t get_handler(httpd_req_t *req) {
     return ESP_OK;
 }
 
-/*static esp_err_t get_time_and_status_handler(httpd_req_t *req) {
-    if (meastask_manager.running_measurement) {
-        char buf[8];
-        int64_t time_value = meastask_manager.current_time_us; 
-        sprintf(buf, "%.2f", (float) time_value / (float) 1e6);
-        httpd_resp_sendstr(req, buf);
-    } 
-    
+static esp_err_t get_RSSI_handler(httpd_req_t *req) {
+    char buf[8];
+    int32_t rssi = readRSSI();
+    sprintf(buf, "%d", rssi);
+    httpd_resp_sendstr(req, buf);
     return ESP_OK;
-}*/
+}
+
 static esp_err_t get_time_and_status_handler(httpd_req_t *req) {
     static char buf[8];
     cJSON *root = cJSON_CreateObject();
@@ -145,6 +141,13 @@ httpd_uri_t start_meas_uri = {
     .user_ctx  = NULL
 };
 
+httpd_uri_t get_RSSI_uri = {
+    .uri       = "/startMeas",
+    .method    = HTTP_GET,
+    .handler   = get_RSSI_handler,
+    .user_ctx  = NULL
+};
+
 /* Function for starting the webserver */
 httpd_handle_t start_webserver(void)
 {
@@ -159,7 +162,9 @@ httpd_handle_t start_webserver(void)
         /* Register URI handlers */
         httpd_register_uri_handler(server, &uri_get);
         httpd_register_uri_handler(server, &start_meas_uri);
-        httpd_register_uri_handler(server, &get_time_and_status_uri);
+        httpd_register_uri_handler(server, &get_time_and_status_uri);get_RSSI_handler
+        httpd_register_uri_handler(server, &get_RSSI_uri);
+
     }
     /* If server failed to start, handle will be NULL */
     return server;

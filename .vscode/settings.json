@@ -5,6 +5,7 @@
         "task.h": "c",
         "freertos.h": "c",
         "gpio.h": "c",
-        "hc_sr04.h": "c"
+        "hc_sr04.h": "c",
+        "esp_http_server.h": "c"
     }
 }

@@ -4,6 +4,8 @@
 #define SERVER_H
 
 #include "esp_http_server.h"
+#include "main.h"
+#include "cJSON.h"
 
 #ifndef MIN
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
