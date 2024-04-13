@@ -6,6 +6,9 @@
         "freertos.h": "c",
         "gpio.h": "c",
         "hc_sr04.h": "c",
-        "esp_http_server.h": "c"
+        "esp_http_server.h": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c"
     }
 }

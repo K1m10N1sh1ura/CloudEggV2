@@ -73,17 +73,10 @@ const char* html_response =
 "</body>\n"
 "</html>";
 
+
 // HTTP GET Handler
 static esp_err_t get_handler(httpd_req_t *req) {
     httpd_resp_send(req, html_response, HTTPD_RESP_USE_STRLEN);
-    return ESP_OK;
-}
-
-static esp_err_t get_RSSI_handler(httpd_req_t *req) {
-    char buf[8];
-    int32_t rssi = readRSSI();
-    sprintf(buf, "%d", rssi);
-    httpd_resp_sendstr(req, buf);
     return ESP_OK;
 }
 
@@ -141,13 +134,6 @@ httpd_uri_t start_meas_uri = {
     .user_ctx  = NULL
 };
 
-httpd_uri_t get_RSSI_uri = {
-    .uri       = "/startMeas",
-    .method    = HTTP_GET,
-    .handler   = get_RSSI_handler,
-    .user_ctx  = NULL
-};
-
 /* Function for starting the webserver */
 httpd_handle_t start_webserver(void)
 {
@@ -162,9 +148,7 @@ httpd_handle_t start_webserver(void)
         /* Register URI handlers */
         httpd_register_uri_handler(server, &uri_get);
         httpd_register_uri_handler(server, &start_meas_uri);
-        httpd_register_uri_handler(server, &get_time_and_status_uri);get_RSSI_handler
-        httpd_register_uri_handler(server, &get_RSSI_uri);
-
+        httpd_register_uri_handler(server, &get_time_and_status_uri);
     }
     /* If server failed to start, handle will be NULL */
     return server;

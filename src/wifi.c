@@ -7,6 +7,7 @@
 
 static const char *TAG = "wifi softAP";
 
+
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
                                     int32_t event_id, void* event_data)
 {
@@ -78,11 +79,4 @@ void wifi_init() {
 
     ESP_LOGI(TAG, "ESP_WIFI_MODE_AP");
     wifi_init_softap();
-}
-
-int32_t readRSSI() {
-    // Lese die Signalstärke aus
-    wifi_ap_record_t ap_info;
-    esp_wifi_sta_get_ap_info(&ap_info);
-    return ap_info.rssi;
 }
