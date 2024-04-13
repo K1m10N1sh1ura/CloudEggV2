@@ -2,6 +2,7 @@
 
 // Global Variables
 HC_SR04_Manager hc_sr04_manager;
+Meastask_Manager meastask_manager;
 
 // RTOS Handles
 TaskHandle_t xAcousticBarrierTaskHandle = NULL;
@@ -34,11 +35,16 @@ void vCliTask( void * pvParameters) {
     cli_menu();
 
     while(1) {
-        if (scanf("%79s", cli_command) == 1) {  // Check if scanf successfully read a string
+        if (scanf("%7s", cli_command) == 1) {  // Check if scanf successfully read a string
             if (strcmp(cli_command, "1") == 0) {
-                printf("Sound barrier on! \n");
-                if(xAcousticBarrierTaskHandle != NULL) {
-                    vTaskResume(xAcousticBarrierTaskHandle); // Resume the acoustic barrier task
+                if (!meastask_manager.running_measurement) {
+                    printf("Sound barrier on! \n");
+                    if(xAcousticBarrierTaskHandle != NULL) {
+                        vTaskResume(xAcousticBarrierTaskHandle); // Resume the acoustic barrier task
+                    }
+                }
+                else {
+                    printf("Error, last measurement not finished yet!\n");
                 }
             }
             else if (strcmp(cli_command, "2") == 0) {
@@ -66,33 +72,35 @@ void vCliTask( void * pvParameters) {
 void vAcousticBarrierTask(void *pvParameters) {
     // Initialize the GPIO trigger
     gpio_set_level(GPIO_OUTPUT_IO_TRIGGER, 1);
-
+    meastask_manager.current_time_us = 0;
+    meastask_manager.running_measurement = false;
     float distance;
+    int64_t elapsed_time_us;
+    int64_t time_start_us;
+    int64_t time_stop_us;
     struct timeval tv_start, tv_stop;
 
     // Suspend the task initially
     vTaskSuspend(NULL);
 
     while (1) {
+        meastask_manager.running_measurement = true;
         // Record the start time
         gettimeofday(&tv_start, NULL);
+        time_start_us = (int64_t)tv_start.tv_sec * 1000000L + (int64_t)tv_start.tv_usec;
 
         // Continuously measure distance until an object is detected within the range
         do {
             distance = getDist(&hc_sr04_manager);
-        } while (distance > 1.5 || distance < 0);
-
-        // Record the stop time
-        gettimeofday(&tv_stop, NULL);
-
-        // Calculate the elapsed time in milliseconds
-        int64_t time_start_us = (int64_t)tv_start.tv_sec * 1000000L + (int64_t)tv_start.tv_usec;
-        int64_t time_stop_us = (int64_t)tv_stop.tv_sec * 1000000L + (int64_t)tv_stop.tv_usec;
-        int64_t elapsed_time_ms = (time_stop_us - time_start_us) / 1000;
-
+            // Record the stop time
+            gettimeofday(&tv_stop, NULL);
+            time_stop_us = (int64_t)tv_stop.tv_sec * 1000000L + (int64_t)tv_stop.tv_usec;
+            elapsed_time_us = (time_stop_us - time_start_us);
+            meastask_manager.current_time_us = elapsed_time_us;
+        } while (distance > 1.0 || distance < 0);
         // Output the result
-        printf("\nTriggered after %lld ms at distance: %.2f m\n", elapsed_time_ms, distance);
-
+        printf("\nTriggered after %.2f s at distance: %.2f m\n", elapsed_time_us/1e6, distance);
+        meastask_manager.running_measurement = false;
         // Suspend the task until the next trigger
         vTaskSuspend(NULL);
     }

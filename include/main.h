@@ -13,6 +13,16 @@
 #include "wifi.h"
 #include "server.h"
 
+// Structs
+typedef struct {
+    int64_t current_time_us;
+    bool running_measurement;
+} Meastask_Manager;
+
+// Global vars
+extern Meastask_Manager meastask_manager;
+extern TaskHandle_t xAcousticBarrierTaskHandle;
+
 // Task Function Prototypes
 void vAcousticBarrierTask( void * pvParameters );
 void vCliTask( void * pvParameters );
