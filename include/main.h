@@ -26,7 +26,7 @@ extern TaskHandle_t xAcousticBarrierTaskHandle;
 // Task Function Prototypes
 void vAcousticBarrierTask( void * pvParameters );
 void vCliTask( void * pvParameters );
-static void gpio_isr_handler(void* arg);
+static void IRAM_ATTR gpio_isr_handler(void* arg);
 void cli_menu();
 
 #endif // MAIN_H

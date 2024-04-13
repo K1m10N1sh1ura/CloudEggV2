@@ -88,7 +88,7 @@ void vAcousticBarrierTask(void *pvParameters) {
         // Record the start time
         gettimeofday(&tv_start, NULL);
         time_start_us = (int64_t)tv_start.tv_sec * 1000000L + (int64_t)tv_start.tv_usec;
-
+        printf("Soundbarrier ready!\n");
         // Continuously measure distance until an object is detected within the range
         do {
             distance = getDist(&hc_sr04_manager);
