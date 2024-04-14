@@ -1,82 +1,17 @@
 #include "server.h"
-
-// HTML-Seite als Konstante
-const char* html_response = 
-"<!DOCTYPE html>\n"
-"<html>\n"
-"<head>\n"
-"    <title>ESP32 Web Server</title>\n"
-"</head>\n"
-"<body>\n"
-"    <h1>ESP32 Web Server</h1>\n"
-"    <button id='actionButton' onclick='startMeasurement()'>Starte Messung</button>\n"
-"    <p>Zeit: <span id='timeValue'> 0.00 s </span></p>\n"
-"    <p>Status: <span id='statusMessage'> Bereit...</span></p>\n"
-"\n"
-"    <script>\n"
-"    var intervalId = null; // ID des Intervalls\n"
-"\n"
-"    function startMeasurement() {\n"
-"        document.getElementById('actionButton').disabled = true; // Button deaktivieren\n"
-"        if (intervalId) {\n"
-"            clearInterval(intervalId); // Sicherstellen, dass keine vorherige Intervalle laufen\n"
-"        }\n"
-"        fetchStartMeasurement();\n"
-"        intervalId = setInterval(fetchTimeValue, 200); // Intervall starten\n"
-"    }\n"
-"\n"
-"    function fetchTimeValue() {\n"
-"        fetch('/getTimeAndStatus')\n"
-"            .then(response => {\n"
-"                if (!response.ok) {\n"
-"                    throw new Error('Server response not OK');\n"
-"                }\n"
-"                return response.json();\n"
-"            })\n"
-"            .then(data => {\n"
-"               document.getElementById('timeValue').textContent = data.timeValue;\n"
-"               document.getElementById('statusMessage').textContent = 'Messung aktiv...!';\n"
-"               if (!data.runningMeasurement) {\n"
-"                    stopMeasurement(); // Messung stoppen, wenn nicht mehr aktiv\n"
-"                }\n"
-"            })\n"
-"            .catch(err => {\n"
-"                console.error('Fehler bei der Anfrage:', err);\n"
-"                document.getElementById('statusMessage').textContent = 'Fehler!';\n"
-"                stopMeasurement(); // Stoppen, wenn ein Fehler auftritt\n"
-"            });\n"
-"    }\n"
-"    function fetchStartMeasurement() {\n"
-"        fetch('/startMeas')\n"
-"            .then(response => {\n"
-"                if (!response.ok) {\n"
-"                    throw new Error('Server response not OK');\n"
-"                }\n"
-"                return response.text();\n"
-"            })\n"
-"            .then(data => {\n"
-"                document.getElementById('statusMessage').textContent = data;\n"
-"            })\n"
-"            .catch(err => {\n"
-"                console.error('Fehler bei der Anfrage:', err);\n"
-"                document.getElementById('statusMessage').textContent = 'Messung konnte nicht gestartet werden!';\n"
-"                stopMeasurement(); // Stoppen, wenn ein Fehler auftritt\n"
-"            });\n"
-"    }\n"
-"\n"
-"    function stopMeasurement() {\n"
-"        clearInterval(intervalId); // Intervall stoppen\n"
-"        document.getElementById('actionButton').disabled = false; // Button reaktivieren\n"
-"        document.getElementById('statusMessage').textContent = 'Bereit...!';\n"
-"    }\n"
-"    </script>\n"
-"</body>\n"
-"</html>";
-
+#include "index_html.h" // Das erzeugte .h-File mit dem HTML
 
 // HTTP GET Handler
+
+WEBKIT_RESPONSE_ARGS webkit_upload_args = { index_html, &index_html_len };
+
 static esp_err_t get_handler(httpd_req_t *req) {
-    httpd_resp_send(req, html_response, HTTPD_RESP_USE_STRLEN);
+    /* Send response with custom headers and body set as the
+     * string passed in user context*/
+    WEBKIT_RESPONSE_ARGS* args = (WEBKIT_RESPONSE_ARGS *)(req->user_ctx);
+    
+    httpd_resp_set_type(req, HTTPD_TYPE_TEXT);    
+    httpd_resp_send(req, (const char*)args->resp, *(args->resp_len));
     return ESP_OK;
 }
 
@@ -100,7 +35,7 @@ static esp_err_t get_time_and_status_handler(httpd_req_t *req) {
 }
 
 static esp_err_t start_meas_handler(httpd_req_t *req) {
-    char buf[64];
+    static char buf[64];
     if (!meastask_manager.running_measurement) {
         vTaskResume(xAcousticBarrierTaskHandle); // Resume the acoustic barrier task
         sprintf(buf, "Messung gestartet!");
@@ -117,7 +52,7 @@ httpd_uri_t uri_get = {
     .uri      = "/",
     .method   = HTTP_GET,
     .handler  = get_handler,
-    .user_ctx = NULL
+    .user_ctx  = (void *)&webkit_upload_args 
 };
 
 httpd_uri_t get_time_and_status_uri = {
