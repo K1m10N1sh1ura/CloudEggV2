@@ -5,122 +5,167 @@
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <title>ESP32 Web Server</title>
     <style>
-        @media only screen and (max-width: 600px) {
-            body {
-                font-size: 14px;
-            }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            font-size: 16px;
+            background-color: rgb(48, 48, 52);
+            color: #FFF;
+            margin: 0;
+            padding: 0;
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        #actionButton {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            cursor: pointer;
+            transition-duration: 0.4s;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+        }
+        #actionButton:hover {
+            background-color: #45a049;
+        }
+        
+        .info {
+            font-size: 18px;
+            margin: 0;
+            padding: 10px;
+        }
+        
+        #timeValue, #statusMessage {
+            font-size: 20px;
+            font-weight: 700;
         }
     </style>
 </head>
 <body>
     <h1>CloudEgg Webserver</h1>
     <button id='actionButton' onclick='playSoundAndStartMeasurement()'>Starte Messung</button>
-    <p>Zeit: <span id='timeValue'> 0.00 s </span></p>
-    <p>Status: <span id='statusMessage'> Bereit...</span></p>
+    <p class="info">Zeit: <span id='timeValue'> 0.00 s </span></p>
+    <p class="info">Status: <span id='statusMessage'> Bereit...</span></p>
     <audio id='myAudio'></audio>
 
     <script>
-    var intervalId = null; // ID des Intervalls
-function playSoundAndStartMeasurement() {
-    document.getElementById('actionButton').disabled = true;
-    document.getElementById('statusMessage').innerHTML = 'READY';
-    document.getElementById('statusMessage').style.color = 'red';
-    var audio = document.getElementById('myAudio');
-
-    var audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    var tone1Duration = 1000; // 1 Sekunde für Ton 1
-    var pause1Duration = 1000; // 1 Sekunde Pause nach Ton 1
-    var tone2Duration = 1000; // 1 Sekunde für Ton 2
-    var pause2Duration = Math.floor(Math.random() * (6000 - 1000 + 1)) + 1000; // Zufällige Pause zwischen 1 und 6 Sekunden
-    var tone3Duration = 1000; // 1 Sekunde für Ton 3
-
-    var startTime = audioContext.currentTime; // Startzeitpunkt für die Tonausgabe
-
-    var oscillator1 = audioContext.createOscillator();
-    var oscillator2 = audioContext.createOscillator();
-    var oscillator3 = audioContext.createOscillator();
-
-    oscillator1.type = 'sine';
-    oscillator1.frequency.setValueAtTime(900, startTime);
-    oscillator2.type = 'sine';
-    oscillator2.frequency.setValueAtTime(900, startTime + tone1Duration / 1000 + pause1Duration / 1000);
-    oscillator3.type = 'sine';
-    oscillator3.frequency.setValueAtTime(1800, startTime + tone1Duration / 1000 + pause1Duration / 1000 + tone2Duration / 1000 + pause2Duration / 1000);
-
-    oscillator1.connect(audioContext.destination);
-    oscillator2.connect(audioContext.destination);
-    oscillator3.connect(audioContext.destination);
-
-    oscillator1.start(startTime);
-    oscillator2.start(startTime + tone1Duration / 1000 + pause1Duration / 1000);
-    oscillator3.start(startTime + tone1Duration / 1000 + pause1Duration / 1000 + tone2Duration / 1000 + pause2Duration / 1000);
-
-    oscillator1.stop(startTime + tone1Duration / 1000);
-    oscillator2.stop(startTime + tone1Duration / 1000 + pause1Duration / 1000 + tone2Duration / 1000);
-    oscillator3.stop(startTime + tone1Duration / 1000 + pause1Duration / 1000 + tone2Duration / 1000 + pause2Duration / 1000 + tone3Duration / 1000);
-
-    setTimeout(function() {
-        document.getElementById('statusMessage').innerHTML = 'SET';
-        document.getElementById('statusMessage').style.color = 'yellow';
-    }, (tone1Duration + pause1Duration));
-
-    setTimeout(function() {
-        document.getElementById('statusMessage').innerHTML = 'GO';
-        document.getElementById('statusMessage').style.color = 'green';
-        startMeasurement();
-    }, (tone1Duration + pause1Duration + tone2Duration + pause2Duration));
-}
-    function startMeasurement() {
-        if (intervalId) {
-            clearInterval(intervalId); // Sicherstellen, dass keine vorherige Intervalle laufen
+        var intervalId = null; // ID des Intervalls
+    function playSoundAndStartMeasurement() {
+        document.getElementById('actionButton').disabled = true;
+        document.getElementById('statusMessage').innerHTML = 'READY';
+        document.getElementById('statusMessage').style.color = 'red';
+        var audio = document.getElementById('myAudio');
+    
+        var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        var tone1Duration = 1000; // 1 Sekunde für Ton 1
+        var pause1Duration = 1000; // 1 Sekunde Pause nach Ton 1
+        var tone2Duration = 1000; // 1 Sekunde für Ton 2
+        var pause2Duration = Math.floor(Math.random() * (6000 - 1000 + 1)) + 1000; // Zufällige Pause zwischen 1 und 6 Sekunden
+        var tone3Duration = 1000; // 1 Sekunde für Ton 3
+    
+        var startTime = audioContext.currentTime; // Startzeitpunkt für die Tonausgabe
+    
+        var oscillator1 = audioContext.createOscillator();
+        var oscillator2 = audioContext.createOscillator();
+        var oscillator3 = audioContext.createOscillator();
+    
+        oscillator1.type = 'sine';
+        oscillator1.frequency.setValueAtTime(900, startTime);
+        oscillator2.type = 'sine';
+        oscillator2.frequency.setValueAtTime(900, startTime + tone1Duration / 1000 + pause1Duration / 1000);
+        oscillator3.type = 'sine';
+        oscillator3.frequency.setValueAtTime(1800, startTime + tone1Duration / 1000 + pause1Duration / 1000 + tone2Duration / 1000 + pause2Duration / 1000);
+    
+        oscillator1.connect(audioContext.destination);
+        oscillator2.connect(audioContext.destination);
+        oscillator3.connect(audioContext.destination);
+    
+        oscillator1.start(startTime);
+        oscillator2.start(startTime + tone1Duration / 1000 + pause1Duration / 1000);
+        oscillator3.start(startTime + tone1Duration / 1000 + pause1Duration / 1000 + tone2Duration / 1000 + pause2Duration / 1000);
+    
+        oscillator1.stop(startTime + tone1Duration / 1000);
+        oscillator2.stop(startTime + tone1Duration / 1000 + pause1Duration / 1000 + tone2Duration / 1000);
+        oscillator3.stop(startTime + tone1Duration / 1000 + pause1Duration / 1000 + tone2Duration / 1000 + pause2Duration / 1000 + tone3Duration / 1000);
+    
+        setTimeout(function() {
+            document.getElementById('statusMessage').innerHTML = 'SET';
+            document.getElementById('statusMessage').style.color = 'yellow';
+        }, (tone1Duration + pause1Duration));
+    
+        setTimeout(function() {
+            document.getElementById('statusMessage').innerHTML = 'GO';
+            document.getElementById('statusMessage').style.color = 'green';
+            startMeasurement();
+        }, (tone1Duration + pause1Duration + tone2Duration + pause2Duration));
+    }
+        function startMeasurement() {
+            if (intervalId) {
+                clearInterval(intervalId); // Sicherstellen, dass keine vorherige Intervalle laufen
+            }
+            fetchStartMeasurement();
+            intervalId = setInterval(fetchTimeValue, 200); // Intervall starten
         }
-        fetchStartMeasurement();
-        intervalId = setInterval(fetchTimeValue, 200); // Intervall starten
-    }
-
-    function fetchTimeValue() {
-        fetch('/getTimeAndStatus')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Server response not OK');
-                }
-                return response.json();
-            })
-            .then(data => {
-               document.getElementById('timeValue').textContent = data.timeValue;
-               if (!data.runningMeasurement) {
-                    stopMeasurement(); // Messung stoppen, wenn nicht mehr aktiv
-                }
-            })
-            .catch(err => {
-                console.error('Fehler bei der Anfrage:', err);
-                document.getElementById('statusMessage').textContent = 'Fehler!';
-                stopMeasurement(); // Stoppen, wenn ein Fehler auftritt
-            });
-    }
-    function fetchStartMeasurement() {
-        fetch('/startMeas')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Server response not OK');
-                }
-                return response.text();
-            })
-            .then(data => {
-                document.getElementById('statusMessage').textContent = data;
-            })
-            .catch(err => {
-                console.error('Fehler bei der Anfrage:', err);
-                document.getElementById('statusMessage').textContent = 'Messung konnte nicht gestartet werden!';
-                stopMeasurement(); // Stoppen, wenn ein Fehler auftritt
-            });
-    }
-
-    function stopMeasurement() {
-        clearInterval(intervalId); // Intervall stoppen
-        document.getElementById('actionButton').disabled = false; // Button reaktivieren
-        document.getElementById('statusMessage').textContent = 'Bereit...!';
-    }
-    </script>
+    
+        function fetchTimeValue() {
+            fetch('/getTimeAndStatus')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Server response not OK');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('timeValue').textContent = data.timeValue + " s";
+                   if (!data.runningMeasurement) {
+                        stopMeasurement(); // Messung stoppen, wenn nicht mehr aktiv
+                    }
+                })
+                .catch(err => {
+                    console.error('Fehler bei der Anfrage:', err);
+                    document.getElementById('statusMessage').textContent = 'Fehler!';
+                    stopMeasurement(); // Stoppen, wenn ein Fehler auftritt
+                });
+        }
+        function fetchStartMeasurement() {
+            fetch('/startMeas')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Server response not OK');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    document.getElementById('statusMessage').innerHTML = 'GO';
+                    document.getElementById('statusMessage').style.color = 'green';                })
+                .catch(err => {
+                    console.error('Fehler bei der Anfrage:', err);
+                    document.getElementById('statusMessage').textContent = 'Messung konnte nicht gestartet werden!';
+                    document.getElementById('statusMessage').style.color = 'red';
+                    stopMeasurement(); // Stoppen, wenn ein Fehler auftritt
+                });
+        }
+    
+        function stopMeasurement() {
+            clearInterval(intervalId); // Intervall stoppen
+            document.getElementById('actionButton').disabled = false; // Button reaktivieren
+            document.getElementById('statusMessage').textContent = 'Bereit...!';
+            document.getElementById('statusMessage').style.color = 'green';
+        }
+        </script>
 </body>
 </html>

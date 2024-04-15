@@ -10,6 +10,7 @@
         "array": "c",
         "string": "c",
         "string_view": "c",
-        "cjson.h": "c"
+        "cjson.h": "c",
+        "string.h": "c"
     }
 }
