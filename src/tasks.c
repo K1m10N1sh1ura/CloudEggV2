@@ -40,7 +40,7 @@ void vCliTask( void * pvParameters) {
 
 /*
     This task continuously measures distance and logs the time when an object is detected
-    within a range of 0 to 1.5 meters.
+    within a range of 0 to MAX_DISTANCE_TO_OBJECT meters.
 */
 void vAcousticBarrierTask(void *pvParameters) {
     // Initialize the GPIO trigger
@@ -90,7 +90,7 @@ void cli_menu() {
     printf("Enter command: \n");
 }
 
-void IRAM_ATTR gpio_isr_handler(void* arg) {  
+void gpio_isr_handler(void* arg) {  
     /*
         Interrupt handler for HC-SR04 sensor echoes.
         Tracks the time between the rising and falling edges of the echo signal to calculate the travel time of an ultrasound pulse.

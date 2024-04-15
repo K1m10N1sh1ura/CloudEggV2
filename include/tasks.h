@@ -20,7 +20,7 @@ extern HC_SR04_Manager hc_sr04_manager;
 // Task Function Prototypes
 void vAcousticBarrierTask( void * pvParameters );
 void vCliTask( void * pvParameters );
-void IRAM_ATTR gpio_isr_handler(void* arg);
+void gpio_isr_handler(void* arg);
 void cli_menu();
 
 #endif // TASKS_H
