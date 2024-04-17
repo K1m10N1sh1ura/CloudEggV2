@@ -1,2 +1,2 @@
 #!/bin/bash
-xxd -i index.html > include/index_html.h
+xxd -i index.html > src/index_html.c

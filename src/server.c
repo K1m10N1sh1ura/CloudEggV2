@@ -1,6 +1,4 @@
 #include "server.h"
-#include "index_html.h" // Das erzeugte .h-File mit dem HTML
-
 // HTTP GET Handler
 
 WEBKIT_RESPONSE_ARGS webkit_upload_args = { index_html, &index_html_len };

@@ -3,9 +3,11 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include "main.h"
 #include "esp_http_server.h"
 #include "cJSON.h"
+#include "tasks.h"
+#include "server.h"
+#include "index_html.h" // Das erzeugte .h-File mit dem HTML
 
 #ifndef MIN
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
