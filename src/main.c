@@ -1,13 +1,7 @@
 #include "main.h"
 
-// RTOS Handles
-TaskHandle_t xAcousticBarrierTaskHandle = NULL;
-TaskHandle_t xCliTaskHandle = NULL;
 
 void app_main(void) {
-    // Initialize the ultrasonic sensor
-    HC_SR04_init(&hc_sr04_manager);
-
     // Set up GPIO
     gpio_setup();
 

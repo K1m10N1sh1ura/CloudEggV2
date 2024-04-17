@@ -1,8 +1,10 @@
 #include "tasks.h"
-
 // Global Variables
-HC_SR04_Manager hc_sr04_manager;
 Meastask_Manager meastask_manager;
+
+// RTOS Handles
+TaskHandle_t xAcousticBarrierTaskHandle = NULL;
+TaskHandle_t xCliTaskHandle = NULL;
 
 void vCliTask( void * pvParameters) {
     char cli_command[8];
@@ -24,10 +26,9 @@ void vCliTask( void * pvParameters) {
                 printf("\nDistance = %.2f \n", getDist(&hc_sr04_manager));
             }
             else if (strcmp(cli_command, "3") == 0) {
-                struct timeval tv_now;
-                gettimeofday(&tv_now, NULL);
-                int64_t time_us = (int64_t)tv_now.tv_sec * 1000000L + (int64_t)tv_now.tv_usec;
-                printf("Time: %lld\n", time_us);
+                CloudEgg_Position_Manager manager;
+                CloudEgg_position_manager_init(&manager);
+                CloudEgg_validate_sensor_pos(&manager);
             }
             else {
                 printf("Invalid command\n\n");
@@ -43,6 +44,8 @@ void vCliTask( void * pvParameters) {
     within a range of 0 to MAX_DISTANCE_TO_OBJECT meters.
 */
 void vAcousticBarrierTask(void *pvParameters) {
+    // Initialize the ultrasonic sensor
+    HC_SR04_init(&hc_sr04_manager);
     // Initialize the GPIO trigger
     gpio_set_level(GPIO_OUTPUT_IO_TRIGGER, 1);
     meastask_manager.current_time_us = 0;
@@ -88,6 +91,10 @@ void cli_menu() {
     printf(" 2 - Display distance\n");
     printf(" 3 - Show current time\n");
     printf("Enter command: \n");
+}
+
+void validateCloudEggPosition() {
+
 }
 
 void gpio_isr_handler(void* arg) {  
