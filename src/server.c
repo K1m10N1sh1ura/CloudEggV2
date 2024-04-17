@@ -14,12 +14,9 @@ static esp_err_t get_handler(httpd_req_t *req) {
 }
 
 static esp_err_t get_time_and_status_handler(httpd_req_t *req) {
-    static char buf[8];
     cJSON *root = cJSON_CreateObject();
 
-    int64_t time_value = meastask_manager.current_time_us; 
-    sprintf(buf, "%.2f", (float) time_value / (float) 1e6);
-    cJSON_AddStringToObject(root, "timeValue", buf);
+    cJSON_AddNumberToObject(root, "timeValue", (float) meastask_manager.current_time_us / (float) 1e6);
     cJSON_AddBoolToObject(root, "runningMeasurement", meastask_manager.running_measurement);
 
     const char *json_string = cJSON_PrintUnformatted(root);
@@ -29,6 +26,21 @@ static esp_err_t get_time_and_status_handler(httpd_req_t *req) {
     cJSON_Delete(root);
     free((void *)json_string);
 
+    return ESP_OK;
+}
+
+static esp_err_t validate_pos_handler(httpd_req_t *req) {
+    cJSON *root = cJSON_CreateObject();
+    CloudEgg_validate_sensor_pos(&pos_manager);
+    cJSON_AddNumberToObject(root, "avgDist", pos_manager.avg_distance_to_next_object);
+    cJSON_AddNumberToObject(root, "DistStdDev", pos_manager.distance_std_dev);
+    cJSON_AddNumberToObject(root, "MeasPerSec", pos_manager.measurements_per_second);
+    cJSON_AddNumberToObject(root, "ErrDetect", pos_manager.errorDetections);
+    cJSON_AddStringToObject(root, "ErrDetect", sensorPosQualityToString(pos_manager.sensor_pos_Quality));
+    const char *json_string = cJSON_PrintUnformatted(root);
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_sendstr(req, json_string);
+    cJSON_Delete(root);
     return ESP_OK;
 }
 
@@ -67,6 +79,13 @@ httpd_uri_t start_meas_uri = {
     .user_ctx  = NULL
 };
 
+httpd_uri_t validate_pos_uri = {
+    .uri       = "/validatePos",
+    .method    = HTTP_GET,
+    .handler   = validate_pos_handler,
+    .user_ctx  = NULL
+};
+
 /* Function for starting the webserver */
 httpd_handle_t start_webserver(void)
 {
@@ -82,6 +101,7 @@ httpd_handle_t start_webserver(void)
         httpd_register_uri_handler(server, &uri_get);
         httpd_register_uri_handler(server, &start_meas_uri);
         httpd_register_uri_handler(server, &get_time_and_status_uri);
+        httpd_register_uri_handler(server, &validate_pos_uri);
     }
     /* If server failed to start, handle will be NULL */
     return server;

@@ -53,6 +53,7 @@ typedef struct {
 
 // Global vars
 extern HC_SR04_Manager hc_sr04_manager;
+extern CloudEgg_Position_Manager pos_manager;
 
 // Initialisierung der Struktur mit Default-Werten
 void HC_SR04_init(HC_SR04_Manager *manager);
@@ -65,5 +66,7 @@ void CloudEgg_position_manager_init(CloudEgg_Position_Manager *manager);
 void CloudEgg_validate_sensor_pos(CloudEgg_Position_Manager *manager);
 float floatAvg(float *array, int length);
 float floatStdDev(float *array, int length);
+const char* sensorPosQualityToString(SENSOR_POS_QUALITY sensor_pos_quality);
+void printSensorValidationResult(CloudEgg_Position_Manager *manager);
 
 #endif // HC_SR04_H

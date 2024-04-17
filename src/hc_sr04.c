@@ -1,6 +1,7 @@
 #include "hc_sr04.h"
 
 HC_SR04_Manager hc_sr04_manager;
+CloudEgg_Position_Manager pos_manager;
 
 void HC_SR04_init(HC_SR04_Manager *manager) {
     manager->time_start = 0;
@@ -69,6 +70,7 @@ void CloudEgg_position_manager_init(CloudEgg_Position_Manager *manager) {
 void CloudEgg_validate_sensor_pos(CloudEgg_Position_Manager *manager) {
     
     if (!meastask_manager.running_measurement) {
+        CloudEgg_position_manager_init(manager);
         meastask_manager.running_measurement = true;
         const int num_measurements = 100;
         float elapsed_time_s;
@@ -102,11 +104,26 @@ void CloudEgg_validate_sensor_pos(CloudEgg_Position_Manager *manager) {
                 manager->errorDetections++;
             }
         }
-        // manager->sensor_pos_Quality = ...
-        printf("AvgDistance: %.2f,\n"
-                "MeasPerSec: %.2f\n,"
-                "StdDev: %.2f\n"
-                "ErrDetections: %d\n", manager->avg_distance_to_next_object,manager->measurements_per_second, manager->distance_std_dev, manager->errorDetections);
+
+        if (manager->avg_distance_to_next_object < 5.0 &&
+                manager->avg_distance_to_next_object > 1.2 && 
+                manager->measurements_per_second > 30.0 &&
+                manager->distance_std_dev < 0.3 && 
+                manager->errorDetections < 2) {
+
+            manager->sensor_pos_Quality = IDEAL_POSITION;
+        }
+        else if (manager->avg_distance_to_next_object < 4.0 && 
+                    manager->distance_std_dev > 0.3) {
+            manager->sensor_pos_Quality = OBJECT_INTERFERENCE;
+        }
+        else if(manager->avg_distance_to_next_object < 1.1) {
+            manager->sensor_pos_Quality = CLOSE_OBJECT_INTERFERENCE;
+        }
+        else {
+            manager->sensor_pos_Quality = SUBOPTIMAL_POSITION;
+        }
+
         meastask_manager.running_measurement = false;
         free(distances);
 
@@ -140,4 +157,27 @@ float floatStdDev(float *array, int length) {
 
     // Calculate the standard deviation
     return sqrt(meanSquaredDifferences);
+}
+
+const char* sensorPosQualityToString(SENSOR_POS_QUALITY sensor_pos_quality) {
+    switch(sensor_pos_quality) {
+        case IDEAL_POSITION: return "Ideal postion";
+        case OBJECT_INTERFERENCE: return "Object interference";
+        case CLOSE_OBJECT_INTERFERENCE: return "Close object interference";
+        case SUBOPTIMAL_POSITION: return "Suboptimal position";
+        default: return "UNKNOWN"; // Handle unknown enum values
+    }
+}
+
+void printSensorValidationResult(CloudEgg_Position_Manager *manager) {
+        printf("AvgDistance: %.2f,\n"
+            "MeasPerSec: %.2f,\n"
+            "StdDev: %.2f,\n"
+            "ErrDetections: %d,\n"
+            "PosQual: %s\n", 
+            manager->avg_distance_to_next_object,
+            manager->measurements_per_second, 
+            manager->distance_std_dev, 
+            manager->errorDetections,
+            sensorPosQualityToString(manager->sensor_pos_Quality));
 }

@@ -26,9 +26,8 @@ void vCliTask( void * pvParameters) {
                 printf("\nDistance = %.2f \n", getDist(&hc_sr04_manager));
             }
             else if (strcmp(cli_command, "3") == 0) {
-                CloudEgg_Position_Manager manager;
-                CloudEgg_position_manager_init(&manager);
-                CloudEgg_validate_sensor_pos(&manager);
+                CloudEgg_validate_sensor_pos(&pos_manager);
+                printSensorValidationResult(&pos_manager);
             }
             else {
                 printf("Invalid command\n\n");
