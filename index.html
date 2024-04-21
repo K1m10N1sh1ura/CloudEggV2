@@ -58,7 +58,7 @@
 <body>
     <h1>CloudEgg Webserver</h1>
     <button id='actionButton' onclick='playSoundAndStartMeasurement()'>Starte Messung</button>
-    <p class="info">Zeit: <span id='timeValue'> 0.00 s </span></p>
+    <p class="info">Zeit: <span id='timeValue'> 0.00 Sekunden </span></p>
     <p class="info">Status: <span id='statusMessage'> Bereit...</span></p>
     <audio id='myAudio'></audio>
 
@@ -129,9 +129,15 @@
                     return response.json();
                 })
                 .then(data => {
-                    document.getElementById('timeValue').textContent = data.timeValue.toFixed(2) + " s";
+                    document.getElementById('timeValue').textContent = data.timeValue.toFixed(2) + " Sekunden";
                    if (!data.runningMeasurement) {
+                        var text = "Deine Zeit war: " + document.getElementById('timeValue').textContent;
+                        var speechSynthesis = window.speechSynthesis;
+                        var speech = new SpeechSynthesisUtterance(text);
+                        speech.lang = "de-DE";
+                        speechSynthesis.speak(speech);
                         stopMeasurement(); // Messung stoppen, wenn nicht mehr aktiv
+
                     }
                 })
                 .catch(err => {
@@ -164,24 +170,6 @@
             document.getElementById('actionButton').disabled = false; // Button reaktivieren
             document.getElementById('statusMessage').textContent = 'Bereit...!';
             document.getElementById('statusMessage').style.color = 'green';
-                // Erstelle einen AudioContext
-            var audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-            // Erzeuge einen Sinus-Ton
-            var oscillator = audioContext.createOscillator();
-            oscillator.type = 'sine'; // Sinus-Welle
-            oscillator.frequency.setValueAtTime(900, audioContext.currentTime); // Frequenz auf 900 Hertz setzen
-
-            // Verbinde den Sinus-Ton mit dem AudioContext
-            oscillator.connect(audioContext.destination);
-
-            // Starte die Wiedergabe
-            oscillator.start();
-
-            // Stoppe die Wiedergabe nach 1 Sekunde
-            setTimeout(function() {
-                oscillator.stop();
-            }, 1000);
         }
         </script>
 </body>
