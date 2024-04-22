@@ -54,9 +54,9 @@ float getDist(HC_SR04_Manager *manager) {
                 float distance = 343.0/2 * time_sec;
                 return distance;
             }
-            else {return -1.0;}
+            else {return -1.0;} // no echo received in max waiting time of 10 ms
     }
-    else {return -2.0;}
+    else {return -2.0;} // some kind of error
 }
 
 void CloudEgg_position_manager_init(CloudEgg_Position_Manager *manager) {
