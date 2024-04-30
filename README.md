@@ -43,6 +43,15 @@ HINWEISE
 - Öffne die Adresse 192.168.4.1/validatePos um eine automatische Positionsvalidierung durchzuführen.
 - Die Genauigkeit der Messungen kann je nach Umgebung variieren. Teste die Schranke mit Testmessungen, bevor das Training beginnt.
 
+BILDER
+--------
+CloudEggV0
+<img width="552" alt="Bildschirmfoto 2024-04-30 um 18 33 42" src="https://github.com/K1m10N1sh1ura/CloudEggV2/assets/54206499/2ffa8696-9d4e-4894-992a-00cc97a9642e">
+CLoudEggV1
+<img width="401" alt="Bildschirmfoto 2024-04-30 um 18 33 47" src=<img width="534" alt="Bildschirmfoto 2024-04-30 um 18 33 52" src="https://github.com/K1m10N1sh1ura/CloudEggV2/assets/54206499/86bd977b-b29d-4a0d-bb15-3dacda9004ae">
+"https://github.com/K1m10N1sh1ura/CloudEggV2/assets/54206499/412f87b8-6737-42cd-911c-7869c1684053">
+CloudEggV2 (in der Entstehung mit Display, Einschalter, Batterie und Batteriemanagement)
+
 AUTOREN
 -------
 
