@@ -1,4 +1,4 @@
-PROJECT NAME: Ultrasonic Sprint Timer named CloudEgg... the name has little to nothing to do with the project ^^
+Ultrasonic Sprint Timer named CloudEgg... the name has little to nothing to do with the project ^^
 
 ----------------------------------------
 
