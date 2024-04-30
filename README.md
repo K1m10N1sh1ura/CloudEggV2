@@ -1,64 +1,45 @@
-PROJEKTNAME: Ultraschall-Sprintzeitmesser mit dem Namen CloudEgg... der Name hat wenig bis nichts mit dem Projekt zu tun ^^
+Ultrasonic Sprint Timer named CloudEgg... the name has little to nothing to do with the project ^^
 
-----------------------------------------
+DESCRIPTION
 
-BESCHREIBUNG
-------------
+Sprint timer based on an ultrasonic barrier using an ESP32 microcontroller and an HC-SR04 ultrasonic sensor.
+Runners can connect to the device via WLAN with their smartphone to start their measurements. The measured time is continuously updated and displayed on both the smartphone and the display on the microcontroller.
+The measurement ends once the runner passes through the ultrasonic barrier.
 
-Sprintzeitmesser auf Basis einer Ultraschallbarriere mithilfe eines ESP32 Mikrocontrollers und einem HC-SR04 Ultraschallsensor.
-Läufer können sich mit dem Smartphone per WLAN mit dem Messgerät verbinden und so ihre Messungen starten. Die gemessene Zeit wird laufend aktualisiert auf dem Smartphone und dem Display am Mikrocontroller angezeigt.
-Die Messung endet, sobald der Läufer durch die Ultraschallbarriere läuft.
+FUNCTIONS
 
-FUNKTIONEN
-----------
+Ultrasonic Sensor: The HC-SR04 ultrasonic sensor is used to measure the distance between the sensor and the objects in front of it.
+ESP32 Microcontroller: The ESP32 controls the ultrasonic sensor and display. A web server is hosted on the ESP32 to provide a user interface for interacting with the sprint timer.
+Browser Interface: Users can connect to the sprint timer via a web browser, ideally on a smartphone, to start measurements and view results.
+Real-time Measurement: The ESP32 performs approximately 50 measurements per second to monitor the movement of the object and stop the timer when the object is within one meter or less from the sensor.
+Time Display: The measured time is displayed on both the browser window and a connected display on the ESP32.
+HARDWARE REQUIREMENTS
 
-- Ultraschallsensor: Der HC-SR04 Ultraschallsensor wird verwendet, um die Entfernung zwischen dem Sensor und den Objekten vor dem Sensor zu messen. 
-- ESP32 Mikrocontroller: Der ESP32 steuert Ultraschallsensor und Display. Ein Webserver wird auf dem ESP32 gehostet, um eine Benutzeroberfläche für die Interaktion mit dem Sprintzeitmesser bereitzustellen.
-- Browser-Interface: Benutzer können sich mit dem Sprintzeitmesser über einen Webbrowser, idealerweise auf einem Smartphone, verbinden, um Messungen zu starten und die Ergebnisse anzuzeigen.
-- Echtzeitmessung: Der ESP32 führt etwa 50 Messungen pro Sekunde durch, um die Bewegung des Objekts zu überwachen und die Zeit zu stoppen, wenn sich das Objekt in einem Meter oder weniger Entfernung vor dem Sensor befindet.
-- Anzeige der Zeit: Die gemessene Zeit wird sowohl auf dem Browserfenster als auch auf einem angeschlossenen Display am ESP32 angezeigt.
+ESP32 Microcontroller
+HC-SR04 Ultrasonic Sensor
+Optional: LAFVIN 0.96 Inch OLED I2C Display
+SETUP INSTRUCTIONS
 
-HARDWARE-ANFORDERUNGEN
------------------------
+Connect the HC-SR04 ultrasonic sensor to the ESP32 microcontroller: Echo to D33 and Trigger to D25.
+Upload the corresponding code to the ESP32.
+Power up the ESP32.
+Search and connect your smartphone/PC via WLAN to the "CloudEgg network" (Password: cloudegg).
+Open the IP address of the ESP32 (192.168.4.1) with a browser to access the user interface.
+Start a measurement via the user interface. The process is self-explanatory. After an acoustic sequence, the measurement starts. Once you pass through the ultrasonic barrier, the measurement stops.
+The measured time will be displayed on the browser window and the connected display.
+NOTES
 
-- ESP32 Mikrocontroller
-- HC-SR04 Ultraschallsensor
-- Optional: LAFVIN 0.96 Zoll OED I2C Display
+Ensure the ultrasonic sensor is properly aligned to obtain accurate measurements. There should be no objects in front of the sensor within a distance of 5 meters ideally.
+Open the address 192.168.4.1/validatePos to perform an automatic position validation.
+The accuracy of measurements may vary depending on the environment. Test the barrier with trial measurements before starting the actual training.
+IMAGES
 
-SETUP-ANLEITUNG
----------------
+CloudEggV0
+<img width="552" alt="Screenshot 2024-04-30 at 18 33 42" src="https://github.com/K1m10N1sh1ura/CloudEggV2/assets/54206499/2ffa8696-9d4e-4894-992a-00cc97a9642e">
+CloudEggV1
+<img width="401" alt="Screenshot 2024-04-30 at 18 33 47" src="https://github.com/K1m10N1sh1ura/CloudEggV2/assets/54206499/3c84a235-f6ad-495a-906c-e558fc36be74">
+<img width="534" alt="Screenshot 2024-04-30 at 18 33 52" src="https://github.com/K1m10N1sh1ura/CloudEggV2/assets/54206499/65cb7141-9545-4b2c-b4da-f35f5f6a1e2e">
+CloudEggV2 (under development with display, power switch, battery, and battery management)
+AUTHORS
 
-1. Verbinde den HC-SR04 Ultraschallsensor mit dem ESP32 Mikrocontroller: Echo auf D33 und Trigger auf D25.
-2. Lade den entsprechenden Code auf den ESP32 hoch.
-3. Verbinde den ESP32 mit Strom
-4. Suche und Verbinde dich mit dem Smartphone/PC per WLAN mit dem Netzwerk "CloudEgg network" (Passwort: cloudegg)
-6. Öffne die IP-Adresse des ESP32 (192.168.4.1) mit einem Browser, um auf die Benutzeroberfläche zuzugreifen.
-7. Starte eine Messung über die Benutzeroberfläche. Der Ablauf ist selbsterklärend. Nach einer akustischen Tonabfolge startet die Messung. Sobald man durch die Ultraschallbarriere läuft, stoppt die Messung.
-8. Die gemessene Zeit wird auf dem Browserfenster und dem angeschlossenen Display angezeigt.
-
-HINWEISE
---------
-
-- Stelle sicher, dass der Ultraschallsensor korrekt ausgerichtet ist, um genaue Messungen zu erhalten. Vor dem Sensor sollten sich möglichst keine Objekte im Abstand von 5 Metern befinden
-- Öffne die Adresse 192.168.4.1/validatePos um eine automatische Positionsvalidierung durchzuführen.
-- Die Genauigkeit der Messungen kann je nach Umgebung variieren. Teste die Schranke mit Testmessungen, bevor das Training beginnt.
-
-BILDER
---------
-- CloudEggV0
-
-<img width="552" alt="Bildschirmfoto 2024-04-30 um 18 33 42" src="https://github.com/K1m10N1sh1ura/CloudEggV2/assets/54206499/2ffa8696-9d4e-4894-992a-00cc97a9642e">
-
-- CloudEggV1
-
-<img width="401" alt="Bildschirmfoto 2024-04-30 um 18 33 47" src="https://github.com/K1m10N1sh1ura/CloudEggV2/assets/54206499/3c84a235-f6ad-495a-906c-e558fc36be74">
-
-<img width="534" alt="Bildschirmfoto 2024-04-30 um 18 33 52" src="https://github.com/K1m10N1sh1ura/CloudEggV2/assets/54206499/65cb7141-9545-4b2c-b4da-f35f5f6a1e2e">
-
-- CloudEggV2 (in der Entstehung mit Display, Einschalter, Batterie und Batteriemanagement)
-
-AUTOREN
--------
-
-- Kimio Nishiura (kimio.nishiura@me.com)
-
+Kimio Nishiura (kimio.nishiura@me.com)
