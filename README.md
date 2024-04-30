@@ -47,13 +47,13 @@ IMAGES
 --------
 - CloudEggV0
 
-[Screenshot 2024-04-30 at 18 33 42](https://github.com/K1m10N1sh1ura/CloudEggV2/assets/54206499/2ffa8696-9d4e-4894-992a-00cc97a9642e)
+<img width="552" alt="Bildschirmfoto 2024-04-30 um 18 33 42" src="https://github.com/K1m10N1sh1ura/CloudEggV2/assets/54206499/2ffa8696-9d4e-4894-992a-00cc97a9642e">
 
 - CloudEggV1
 
-[Screenshot 2024-04-30 at 18 33 47](https://github.com/K1m10N1sh1ura/CloudEggV2/assets/54206499/3c84a235-f6ad-495a-906c-e558fc36be74)
+<img width="401" alt="Bildschirmfoto 2024-04-30 um 18 33 47" src="https://github.com/K1m10N1sh1ura/CloudEggV2/assets/54206499/3c84a235-f6ad-495a-906c-e558fc36be74">
 
-[Screenshot 2024-04-30 at 18 33 52](https://github.com/K1m10N1sh1ura/CloudEggV2/assets/54206499/65cb7141-9545-4b2c-b4da-f35f5f6a1e2e)
+<img width="534" alt="Bildschirmfoto 2024-04-30 um 18 33 52" src="https://github.com/K1m10N1sh1ura/CloudEggV2/assets/54206499/65cb7141-9545-4b2c-b4da-f35f5f6a1e2e">
 
 - CloudEggV2 (under development with display, power switch, battery, and battery management)
 
