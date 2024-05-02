@@ -1,5 +1,11 @@
+/*
+ * File: main.c
+ * Author: Kimio Nishiura
+ * Description: Init and setup functions for CloudEggV2 project (GPIOs, ISRs, RTOS, wifi, webserver).
+ *              
+ * Created on: January 1, 2024
+ */
 #include "main.h"
-
 
 void app_main(void) {
     // Set up GPIO
@@ -7,7 +13,7 @@ void app_main(void) {
 
     // Install ISR service and add handler for echo pin
     gpio_install_isr_service(ESP_INTR_FLAG_IRAM);
-    gpio_isr_handler_add(GPIO_OUTPUT_IO_ECHO, gpio_isr_handler, (void*)&hc_sr04_manager);
+    gpio_isr_handler_add(GPIO_OUTPUT_IO_ECHO, hcsr04_gpio_isr_handler, (void*)&hc_sr04_manager);
 
     // Create RTOS tasks
     xTaskCreate(vAcousticBarrierTask, "AcousticBarrierTask", 2048, NULL, 1, &xAcousticBarrierTaskHandle);

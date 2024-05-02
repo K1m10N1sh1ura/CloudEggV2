@@ -1,4 +1,16 @@
+/*
+ * File: tasks.c
+ * Author: Kimio Nishiura
+ * Description: contains the RTOS tasks and ISRs:
+ *      1. vCliTask: 
+ *      2. vAcousticBarrierTask:
+ *      3. hcsr04_gpio_isr_handler:
+ *              
+ * Created on: January 1, 2024
+ */
+
 #include "tasks.h"
+
 // Global Variables
 Meastask_Manager meastask_manager;
 
@@ -7,6 +19,7 @@ TaskHandle_t xAcousticBarrierTaskHandle = NULL;
 TaskHandle_t xCliTaskHandle = NULL;
 
 void vCliTask( void * pvParameters) {
+
     char cli_command[8];
     cli_menu();
 
@@ -88,7 +101,7 @@ void cli_menu() {
     printf("\nMenu:\n");
     printf(" 1 - Turn on sound barrier\n");
     printf(" 2 - Display distance\n");
-    printf(" 3 - Show current time\n");
+    printf(" 3 - Validate CloudEgg positioning\n");
     printf("Enter command: \n");
 }
 
@@ -96,7 +109,7 @@ void validateCloudEggPosition() {
 
 }
 
-void gpio_isr_handler(void* arg) {  
+void hcsr04_gpio_isr_handler(void* arg) {  
     /*
         Interrupt handler for HC-SR04 sensor echoes.
         Tracks the time between the rising and falling edges of the echo signal to calculate the travel time of an ultrasound pulse.

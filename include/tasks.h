@@ -25,7 +25,7 @@ extern TaskHandle_t xCliTaskHandle;
 // Task Function Prototypes
 void vAcousticBarrierTask( void * pvParameters );
 void vCliTask( void * pvParameters );
-void gpio_isr_handler(void* arg);
+void hcsr04_gpio_isr_handler(void* arg);
 void cli_menu();
 void validateCloudEggPosition();
 
