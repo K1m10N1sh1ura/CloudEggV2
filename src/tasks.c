@@ -59,7 +59,6 @@ void vAcousticBarrierTask(void *pvParameters) {
     // Initialize the ultrasonic sensor
     HC_SR04_init(&hc_sr04_manager);
     // Initialize the GPIO trigger
-    gpio_set_level(GPIO_OUTPUT_IO_TRIGGER, 1);
     meastask_manager.current_time_us = 0;
     meastask_manager.running_measurement = false;
     float distance;

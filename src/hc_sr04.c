@@ -1,5 +1,8 @@
 #include "hc_sr04.h"
 
+#define TRIGGER_LOW_DELAY 4
+#define TRIGGER_HIGH_DELAY 10
+
 HC_SR04_Manager hc_sr04_manager;
 CloudEgg_Position_Manager pos_manager;
 
@@ -27,9 +30,12 @@ void HC_SR04_init(HC_SR04_Manager *manager) {
 void HC_SR04_trigger(HC_SR04_Manager *manager) {
     // measurement is triggered by pulling down trigger pin for 10 microseconds
     if (!manager->running_measurement) {
+        // Ping: Low for 2..4 us, then high 10 us
         gpio_set_level(GPIO_OUTPUT_IO_TRIGGER, 0);
-        esp_rom_delay_us(10);
+        esp_rom_delay_us(TRIGGER_LOW_DELAY);
         gpio_set_level(GPIO_OUTPUT_IO_TRIGGER, 1);
+        esp_rom_delay_us(TRIGGER_HIGH_DELAY);
+        gpio_set_level(GPIO_OUTPUT_IO_TRIGGER, 0);
         manager->state = TRIGGER_SENT;
     }
     else {
