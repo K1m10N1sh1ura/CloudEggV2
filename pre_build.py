@@ -1,4 +1,8 @@
+import os
 import subprocess
 
-bash_script_path = "/Users/kimionishiura/Documents/PlatformIO/Projects/CloudEggV2/generate_html_header.sh"
-subprocess.call(["bash", bash_script_path])
+relative_script_path = "generate_html_header.sh"
+absolute_script_path = os.path.abspath(os.path.join(os.getcwd(), relative_script_path))
+
+# Aufruf des Bash-Skripts
+subprocess.call(["bash", absolute_script_path])
